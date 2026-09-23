@@ -69,7 +69,7 @@
 
   ::selection {
     background-color: var(--color-primary);
-    color: #ffffff;
+    color: var(--color-default);
   }
 
   ::-webkit-scrollbar {
@@ -88,4 +88,27 @@
   ::-webkit-scrollbar-thumb:hover {
     background: var(--color-primary);
   }
+}
+
+.poem-scrollbar {
+  scrollbar-width: thin;
+  scrollbar-color: var(--color-scrollbar) transparent;
+  scrollbar-gutter: stable;
+}
+
+.poem-scrollbar::-webkit-scrollbar {
+  width: 4px;
+}
+
+.poem-scrollbar::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+.poem-scrollbar::-webkit-scrollbar-thumb {
+  background: var(--color-scrollbar);
+  border-radius: 999px;
+}
+
+.poem-scrollbar::-webkit-scrollbar-thumb:hover {
+  background: var(--color-primary);
 }

@@ -5,9 +5,9 @@ import { Heart, ArrowRight } from "lucide-react";
 
 export function Home() {
   return (
-    <div className="w-full flex justify-center items-center">
-      <main className="flex flex-col justify-center items-center gap-8 h-screen w-full max-w-155">
-        <div className="flex flex-col justify-center items-center gap-5">
+    <div className="w-full flex justify-center items-center p-6">
+      <main className="flex flex-col justify-center items-center gap-12 h-screen w-full max-w-155">
+        <div className="flex flex-col justify-center items-center gap-4">
           <div>
             <Heart size={20} className="text-primary" />
           </div>
@@ -21,7 +21,7 @@ export function Home() {
             <DecorativeLine fullWidth />
           </div>
           <div>
-            <h1 className="font-display text-6xl">
+            <h1 className="font-display text-6xl ">
               Eu te <span className="text-primary">amo</span>
             </h1>
           </div>
@@ -31,7 +31,7 @@ export function Home() {
           </div>
         </div>
 
-        <div className="h-115 w-full overflow-y-auto rounded-2xl border border-border bg-surface p-8">
+        <div className="poem-scrollbar h-115 w-full overflow-y-auto rounded-2xl border border-border bg-surface p-8">
           <div className="font-sans text-text-muted text-base leading-[1.7]">
             <p>
               Eu pensei que precisaria me ausentar desta vida para conhecer o
