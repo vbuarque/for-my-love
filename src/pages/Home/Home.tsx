@@ -1,6 +1,6 @@
 import { NavLink } from "react-router";
 
-import { DecorativeLine } from "@/components/common/DecorativeLine/DecorativeLine";
+import { DecorativeLine } from "../../components/common/DecorativeLine/DecorativeLine";
 import { Heart, ArrowRight } from "lucide-react";
 
 export function Home() {

@@ -1,8 +1,8 @@
 import { Routes, Route } from "react-router";
 
-import { Heart } from "@/pages/Heart/Heart";
-import { Home } from "@/pages/Home/Home";
-import { NotFound } from "@/pages/NotFound/NotFound";
+import { Heart } from "../pages/Heart/Heart";
+import { Home } from "../pages/Home/Home";
+import { NotFound } from "../pages/NotFound/NotFound";
 
 export function AppRoutes() {
   return (

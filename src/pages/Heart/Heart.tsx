@@ -1,6 +1,8 @@
-import { DecorativeLine } from "@/components/common/DecorativeLine/DecorativeLine";
+import { DecorativeLine } from "../../components/common/DecorativeLine/DecorativeLine";
+import { HeartAnimation } from "../../components/heart/HeartAnimation/HeartAnimation";
 import { ArrowLeft, HeartIcon } from "lucide-react";
 import { NavLink } from "react-router";
+import { MusicPlayer } from "../../components/music/MusicPlayer/MusicPlayer";
 
 export function Heart() {
   return (
@@ -28,15 +30,15 @@ export function Heart() {
         </div>
       </header>
 
-      <main className="mx-auto flex w-full max-w-320 flex-1 items-center gap-16 py-8">
+      <main className="mx-auto flex w-full max-w-7xl flex-1 items-center gap-16 py-8">
         <section className="flex flex-1 flex-col items-center justify-center">
           <div className="flex flex-col items-center text-center font-mono text-xs tracking-[3.84px]">
             <span>ALGUMAS MÚSICAS</span>
             <span>TAMBÉM DIZEM O QUE EU SINTO</span>
           </div>
 
-          <div className="mt-8 flex h-80 w-105 items-center justify-center">
-            {/* HeartAnimation */}
+          <div className="flex h-80 w-105 items-center justify-center">
+            <HeartAnimation />
           </div>
 
           <div className="mt-5 flex items-center gap-3 whitespace-nowrap font-mono text-xs tracking-[3.84px]">
@@ -49,11 +51,11 @@ export function Heart() {
         </section>
 
         <section className="flex w-160 shrink-0 flex-col rounded-2xl border border-border bg-surface p-6">
-          <div className="h-[220px] w-full rounded-xl">
-            {/* MusicPlayer */}
+          <div className="h-55 w-full rounded-xl">
+            <MusicPlayer />
           </div>
 
-          <div className="mt-4 h-[444px] w-full overflow-hidden rounded-xl border border-border bg-bg p-6">
+          <div className="mt-4 h-111 w-full overflow-hidden rounded-xl border border-border bg-bg p-6">
             {/* Lyrics */}
           </div>
         </section>
