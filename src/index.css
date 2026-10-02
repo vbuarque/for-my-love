@@ -1,10 +1,5 @@
 @import "tailwindcss";
 
-/* ------------------------------------------------------------------
-   Design tokens — tudo que o site usa de cor e fonte vive aqui.
-   Cada token vira classes do Tailwind: --color-primary => bg-primary,
-   text-primary, border-primary...
-------------------------------------------------------------------- */
 @theme {
   /* Fonts */
   --font-sans: "Inter", sans-serif;
