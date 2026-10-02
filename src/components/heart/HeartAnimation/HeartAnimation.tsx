@@ -8,152 +8,155 @@ interface Particle {
   size: number;
 }
 
+const PARTICLE_COUNT = 500;
+const FORM_DURATION = 2000; // partículas voam até formar o coração
+const HOLD_DURATION = 1500; // coração formado, batendo
+const FADE_DURATION = 500; // some suavemente antes de recomeçar
+const CYCLE_DURATION = FORM_DURATION + HOLD_DURATION + FADE_DURATION;
+const BEAT_INTERVAL = 750;
+
+function random(min: number, max: number) {
+  return Math.random() * (max - min) + min;
+}
+
+function easeOut(progress: number) {
+  return 1 - Math.pow(1 - progress, 3);
+}
+
+/** Equação paramétrica clássica do coração. */
+function createHeartPoint(t: number, scale: number) {
+  const x = 16 * Math.sin(t) ** 3;
+  const y =
+    13 * Math.cos(t) -
+    5 * Math.cos(2 * t) -
+    2 * Math.cos(3 * t) -
+    Math.cos(4 * t);
+
+  return { x: x * scale, y: -y * scale };
+}
+
 export function HeartAnimation() {
   const canvasRef = useRef<HTMLCanvasElement | null>(null);
 
   useEffect(() => {
     const canvasElement = canvasRef.current;
-
     if (!canvasElement) return;
 
     const context = canvasElement.getContext("2d");
-
     if (!context) return;
 
     const canvas = canvasElement;
     const ctx = context;
 
-    const particleCount = 5000;
-    const animationDuration = 5000;
-    const pauseDuration = 1500;
-    const cycleDuration = animationDuration + pauseDuration;
-
-    let animationFrameId: number;
-    let startTime: number | null = null;
-
-    const particles: Particle[] = [];
-
-    function random(min: number, max: number) {
-      return Math.random() * (max - min) + min;
-    }
-
-    function createHeartPoint(t: number, scale: number) {
-      const x = 16 * Math.sin(t) ** 3;
-
-      const y =
-        13 * Math.cos(t) -
-        5 * Math.cos(2 * t) -
-        2 * Math.cos(3 * t) -
-        Math.cos(4 * t);
-
-      return {
-        x: x * scale,
-        y: -y * scale,
-      };
-    }
+    let particles: Particle[] = [];
+    let width = 0;
+    let height = 0;
+    let animationFrameId = 0;
+    let cycleStart: number | null = null;
 
     function createParticles() {
-      particles.length = 0;
+      const centerX = width / 2;
+      const centerY = height / 2;
+      const scale = Math.min(width / 36, height / 34);
 
-      const width = canvas.clientWidth;
-      const height = canvas.clientHeight;
+      particles = Array.from({ length: PARTICLE_COUNT }, (_, index) => {
+        const t = (Math.PI * 2 * index) / PARTICLE_COUNT;
+        const point = createHeartPoint(t, scale);
 
+        return {
+          startX: random(0, width),
+          startY: random(0, height),
+          targetX: centerX + point.x,
+          // O desenho do coração é mais "pesado" embaixo; subimos um pouco
+          // para ele ficar visualmente centralizado.
+          targetY: centerY + point.y - 2.5 * scale,
+          size: random(1, 3),
+        };
+      });
+    }
+
+    function draw(elapsed: number) {
+      ctx.clearRect(0, 0, width, height);
+
+      const formProgress = easeOut(Math.min(elapsed / FORM_DURATION, 1));
+      const holdTime = Math.max(0, elapsed - FORM_DURATION);
+      const fadeProgress = Math.max(
+        0,
+        (elapsed - FORM_DURATION - HOLD_DURATION) / FADE_DURATION,
+      );
+
+      // Batida: pico curtinho a cada BEAT_INTERVAL, só depois de formado.
+      const beat = Math.abs(Math.sin((holdTime / BEAT_INTERVAL) * Math.PI)) ** 8;
+      const pulse = 1 + 0.04 * beat * (elapsed >= FORM_DURATION ? 1 : 0);
+
+      const opacity = (0.15 + formProgress * 0.85) * (1 - fadeProgress);
       const centerX = width / 2;
       const centerY = height / 2;
 
-      const scale = Math.min(width, height) / 36;
-
-      for (let i = 0; i < particleCount; i++) {
-        const t = (Math.PI * 2 * i) / particleCount;
-
-        const heartPoint = createHeartPoint(t, scale);
-
-        particles.push({
-          startX: random(0, width),
-          startY: random(0, height),
-          targetX: centerX + heartPoint.x,
-          targetY: centerY + heartPoint.y,
-          size: random(1, 3),
-        });
-      }
-    }
-
-    function resizeCanvas() {
-      const rect = canvas.getBoundingClientRect();
-      const pixelRatio = window.devicePixelRatio || 1;
-
-      canvas.width = rect.width * pixelRatio;
-      canvas.height = rect.height * pixelRatio;
-
-      ctx.setTransform(pixelRatio, 0, 0, pixelRatio, 0, 0);
-
-      createParticles();
-    }
-
-    function easeOut(progress: number) {
-      return 1 - Math.pow(1 - progress, 3);
-    }
-
-    function drawParticle(x: number, y: number, size: number, opacity: number) {
+      ctx.fillStyle = `rgba(240, 90, 104, ${opacity})`;
       ctx.beginPath();
 
-      ctx.fillStyle = `rgba(240, 90, 104, ${opacity})`;
+      for (const particle of particles) {
+        const baseX =
+          particle.startX + (particle.targetX - particle.startX) * formProgress;
+        const baseY =
+          particle.startY + (particle.targetY - particle.startY) * formProgress;
 
-      ctx.arc(x, y, size, 0, Math.PI * 2);
+        const x = centerX + (baseX - centerX) * pulse;
+        const y = centerY + (baseY - centerY) * pulse;
+
+        ctx.moveTo(x + particle.size, y);
+        ctx.arc(x, y, particle.size, 0, Math.PI * 2);
+      }
 
       ctx.fill();
     }
 
     function animate(timestamp: number) {
-      if (startTime === null) {
-        startTime = timestamp;
+      if (cycleStart === null) cycleStart = timestamp;
+
+      if (timestamp - cycleStart >= CYCLE_DURATION) {
+        cycleStart = timestamp;
+        createParticles(); // novas posições aleatórias a cada volta
       }
 
-      const elapsed = timestamp - startTime;
-
-      if (elapsed >= cycleDuration) {
-        startTime = timestamp;
-      }
-
-      const cycleElapsed = timestamp - startTime;
-
-      const rawProgress = Math.min(cycleElapsed / animationDuration, 1);
-
-      const progress = easeOut(rawProgress);
-
-      const rect = canvas.getBoundingClientRect();
-
-      ctx.clearRect(0, 0, rect.width, rect.height);
-
-      for (const particle of particles) {
-        const x =
-          particle.startX + (particle.targetX - particle.startX) * progress;
-
-        const y =
-          particle.startY + (particle.targetY - particle.startY) * progress;
-
-        const opacity = 0.15 + progress * 0.85;
-
-        drawParticle(x, y, particle.size, opacity);
-      }
-
+      draw(timestamp - cycleStart);
       animationFrameId = requestAnimationFrame(animate);
+    }
+
+    function resizeCanvas() {
+      const rect = canvas.getBoundingClientRect();
+      if (rect.width === 0 || rect.height === 0) return;
+
+      const pixelRatio = window.devicePixelRatio || 1;
+
+      width = rect.width;
+      height = rect.height;
+      canvas.width = width * pixelRatio;
+      canvas.height = height * pixelRatio;
+      ctx.setTransform(pixelRatio, 0, 0, pixelRatio, 0, 0);
+
+      createParticles();
     }
 
     resizeCanvas();
 
-    window.addEventListener("resize", resizeCanvas);
+    const resizeObserver = new ResizeObserver(resizeCanvas);
+    resizeObserver.observe(canvas);
 
     animationFrameId = requestAnimationFrame(animate);
 
     return () => {
-      window.removeEventListener("resize", resizeCanvas);
-
+      resizeObserver.disconnect();
       cancelAnimationFrame(animationFrameId);
     };
   }, []);
 
   return (
-    <canvas ref={canvasRef} className="h-full w-full" aria-hidden="true" />
+    <canvas
+      ref={canvasRef}
+      className="h-full w-full drop-shadow-[0_0_14px_rgba(240,90,104,0.35)]"
+      aria-hidden="true"
+    />
   );
 }
