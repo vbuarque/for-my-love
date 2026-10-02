@@ -1,75 +1,64 @@
-# React + TypeScript + Vite
+# Heart for my love ❤
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+Site-presente romântico: uma carta de abertura e uma página com um coração
+de partículas, a música "Follow You" (Bring Me The Horizon) e a letra em
+estilo karaokê.
 
-Currently, two official plugins are available:
+**Stack:** Vite · React · TypeScript · Tailwind CSS v4 · React Router · Lucide
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Oxc](https://oxc.rs)
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/)
+## Rodando
 
-## React Compiler
-
-The React Compiler is not enabled on this template because of its impact on dev & build performances. To add it, see [this documentation](https://react.dev/learn/react-compiler/installation).
-
-## Expanding the ESLint configuration
-
-If you are developing a production application, we recommend updating the configuration to enable type-aware lint rules:
-
-```js
-export default defineConfig([
-  globalIgnores(['dist']),
-  {
-    files: ['**/*.{ts,tsx}'],
-    extends: [
-      // Other configs...
-
-      // Remove tseslint.configs.recommended and replace with this
-      tseslint.configs.recommendedTypeChecked,
-      // Alternatively, use this for stricter rules
-      tseslint.configs.strictTypeChecked,
-      // Optionally, add this for stylistic rules
-      tseslint.configs.stylisticTypeChecked,
-
-      // Other configs...
-    ],
-    languageOptions: {
-      parserOptions: {
-        project: ['./tsconfig.node.json', './tsconfig.app.json'],
-        tsconfigRootDir: import.meta.dirname,
-      },
-      // other options...
-    },
-  },
-])
-
+```bash
+npm install     # na primeira vez (atualiza o package-lock.json)
+npm run dev     # http://localhost:5173
 ```
 
-You can also install [eslint-plugin-react-x](https://npmx.dev/package/eslint-plugin-react-x) and [eslint-plugin-react-dom](https://npmx.dev/package/eslint-plugin-react-dom) for React-specific lint rules:
+Outros comandos: `npm run build`, `npm run type-check`, `npm run lint`.
 
-```js
-// eslint.config.js
-import reactX from 'eslint-plugin-react-x'
-import reactDom from 'eslint-plugin-react-dom'
+## O que falta colocar (arquivos que não vêm no código)
 
-export default defineConfig([
-  globalIgnores(['dist']),
-  {
-    files: ['**/*.{ts,tsx}'],
-    extends: [
-      // Other configs...
-      // Enable lint rules for React
-      reactX.configs['recommended-typescript'],
-      // Enable lint rules for React DOM
-      reactDom.configs.recommended,
-    ],
-    languageOptions: {
-      parserOptions: {
-        project: ['./tsconfig.node.json', './tsconfig.app.json'],
-        tsconfigRootDir: import.meta.dirname,
-      },
-      // other options...
-    },
-  },
-])
+1. **A música:** copie o MP3 para `public/audio/follow-you.mp3`.
+2. **A letra sincronizada:** veja a seção abaixo.
+
+A capa já está em `public/images/album-cover.jpg`.
+
+## Sincronizando a letra (karaokê)
+
+A letra fica em `src/data/lyrics.ts` como uma lista de `{ time, text }`
+(`time` = segundo em que a linha começa). Para não marcar tudo de ouvido:
+
+1. Com a música no lugar, rode `npm run dev` e abra
+   <http://localhost:5173/sync> (essa página só existe em desenvolvimento).
+2. Cole a letra na caixa, uma linha por linha.
+3. Toque a música e aperte **Enter** (ou "Marcar") no instante em que cada
+   linha começa. "Desfazer" e "−3s" ajudam a corrigir.
+4. Clique em "Copiar resultado" e cole no lugar do array em
+   `src/data/lyrics.ts`.
+
+Enquanto o array estiver vazio, a caixa mostra "A LETRA APARECE AQUI".
+
+## Estrutura
 
 ```
+src/
+├── components/
+│   ├── common/    DecorativeLine, IconButton
+│   ├── heart/     HeartAnimation (Canvas)
+│   ├── layout/    Header
+│   └── music/     MusicPlayer, PlayerControls, ProgressBar, Lyrics
+├── data/          poem.ts, track.ts, lyrics.ts
+├── hooks/         useAudioPlayer, useLyricsSync
+├── pages/         Home, Heart, NotFound, SyncTool (dev)
+├── routes/
+├── types/
+└── utils/         formatTime, findActiveLineIndex
+```
+
+As cores e fontes ficam em `src/index.css` (bloco `@theme`). Imports usam o
+alias `@/` (= `src/`).
+
+## Publicando
+
+Depois de `npm run build`, publique a pasta `dist/`. Como o site tem rotas
+(`/Heart`), configure na hospedagem o redirecionamento de qualquer caminho
+para `index.html` (SPA fallback).
