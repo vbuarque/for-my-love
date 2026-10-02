@@ -1,18 +1,20 @@
 interface DecorativeLineProps {
-  lineWidth?: number
-  fullWidth?: boolean
+  /** Ocupa o espaço que sobrar na linha flex (em vez de largura fixa). */
+  fullWidth?: boolean;
+  /** Classes extras — use para mudar a largura, ex.: "w-7 lg:w-9". */
+  className?: string;
 }
 
 export function DecorativeLine({
-  lineWidth = 36,
   fullWidth = false,
+  className = "",
 }: DecorativeLineProps) {
+  const width = fullWidth ? "min-w-0 flex-1" : "w-9 shrink-0";
+
   return (
     <div
-      className={`h-px rounded-full bg-text ${
-        fullWidth ? 'w-full' : ''
-      }`}
-      style={fullWidth ? undefined : { width: `${lineWidth}px` }}
+      aria-hidden="true"
+      className={`h-px rounded-full bg-text ${width} ${className}`}
     />
-  )
+  );
 }
